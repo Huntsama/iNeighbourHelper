@@ -1,5 +1,4 @@
 import DataStructure.DictionaryTree;
-import DataStructure.Queue;
 import DataStructure.Vector;
 import DataStructure.Graph;
 
@@ -7,7 +6,7 @@ import DataStructure.Graph;
 public class NeighbourHelper implements iNeighbourHelper {
     private DictionaryTree users;  // For storing users by userID
     private DictionaryTree jobs;  // For storing jobs by jobID
-    private Queue jobApplications;
+    private DictionaryTree jobApplications;
     private Graph<String> streetGraph; // Instance of Graph for streets
 
 
@@ -18,7 +17,7 @@ public class NeighbourHelper implements iNeighbourHelper {
     public NeighbourHelper() {
         users = new DictionaryTree();
         jobs = new DictionaryTree();
-        jobApplications = new Queue();
+        jobApplications = new DictionaryTree();
         streetGraph = new Graph<>();
     }
 
@@ -80,34 +79,29 @@ public class NeighbourHelper implements iNeighbourHelper {
 
     @Override
     public Vector findAvailableJobs() {
-        // vectors for paid and unpaid jobs
         Vector paidJobs = new Vector(100);
         Vector unpaidJobs = new Vector(100);
 
         // loop through all jobs
-        for (int i = 0; i < jobs.size(); i++) {
+        for (int i = 1; i < currentJobId; i++) {
             Job job = (Job) jobs.get(i);
 
-            // check if job is available
-            if (job != null && jobApplications != null && !jobApplications.contains(job)) {
+            // Check if job exists and is not taken
+            if (job != null && jobApplications.get(i) == null) {
                 if (job.getIsPaid()) {
-                    paidJobs.addLast(job); // add to paid jobs
+                    paidJobs.addLast(job);
                 } else {
-                    unpaidJobs.addLast(job); // add to unpaid jobs
+                    unpaidJobs.addLast(job);
                 }
             }
         }
 
-        // combine paid and unpaid jobs
+        // Combine paid first, then unpaid (do it inline, no helper method)
         Vector availableJobs = new Vector(paidJobs.size() + unpaidJobs.size());
-        for (int i = 0; i < paidJobs.size(); i++) {
-            availableJobs.addLast(paidJobs.get(i));
-        }
-        for (int i = 0; i < unpaidJobs.size(); i++) {
-            availableJobs.addLast(unpaidJobs.get(i));
-        }
 
-        // return the combined list
+        availableJobs.mergeVector(paidJobs);    // Add all paid jobs
+        availableJobs.mergeVector(unpaidJobs);
+
         return availableJobs;
     }
 
@@ -115,37 +109,33 @@ public class NeighbourHelper implements iNeighbourHelper {
 
 
 
-
     @Override
     public Vector findAvailableJobsInCategory(String category) {
-        // vectors for paid and unpaid jobs
         Vector paidJobs = new Vector(100);
         Vector unpaidJobs = new Vector(100);
 
-        // loop through all jobs
-        for (int i = 0; i < jobs.size(); i++) {
+        for (int i = 1; i < currentJobId; i++) {
             Job job = (Job) jobs.get(i);
 
-            // check if job matches the category and is not taken
-            if (job != null && !jobApplications.contains(job) && job.getCategory().equalsIgnoreCase(category)) {
+            // Check category and availability
+            if (job != null &&
+                    jobApplications.get(i) == null &&
+                    job.getCategory().equalsIgnoreCase(category)) {
+
                 if (job.getIsPaid()) {
-                    paidJobs.addLast(job); // add to paid jobs
+                    paidJobs.addLast(job);
                 } else {
-                    unpaidJobs.addLast(job); // add to unpaid jobs
+                    unpaidJobs.addLast(job);
                 }
             }
         }
 
-        // combine paid and unpaid jobs
+        // Combine inline
         Vector availableCategoryJobs = new Vector(paidJobs.size() + unpaidJobs.size());
-        for (int i = 0; i < paidJobs.size(); i++) {
-            availableCategoryJobs.addLast(paidJobs.get(i));
-        }
-        for (int i = 0; i < unpaidJobs.size(); i++) {
-            availableCategoryJobs.addLast(unpaidJobs.get(i));
-        }
+        availableCategoryJobs.mergeVector(paidJobs);    // Add all paid jobs
+        availableCategoryJobs.mergeVector(unpaidJobs);  // Add all unpaid jobs
 
-        // return the combined list
+
         return availableCategoryJobs;
     }
 
@@ -155,44 +145,40 @@ public class NeighbourHelper implements iNeighbourHelper {
 
     @Override
     public boolean removeJob(int jobID) {
-        // get the job with the given id
         Job job = (Job) jobs.get(jobID);
 
-        // check if the job exists
         if (job != null) {
-            // print a message and remove the job
-            System.out.println("removing job: " + job);
             jobs.remove(jobID);
+            jobApplications.remove(jobID);
             return true;
-        } else {
-            // print a message if job is not found
-            System.out.println("job not found " + jobID);
         }
 
-        // return false if removal failed
         return false;
     }
 
 
-
     @Override
     public boolean applyForJob(int userID, int jobID) {
-        // Retrieve the user and job from the DictionaryTree
         User user = (User) users.get(userID);
         Job job = (Job) jobs.get(jobID);
 
-        // Check if the user or job exists
         if (user == null || job == null) {
             return false;
         }
 
-        // Check if the job is already applied for
-        if (jobApplications.contains(job)) {
+        // chech if already applied
+        if (jobApplications.get(jobID) != null) {
             return false;
         }
 
-        // Add the job to the applications queue
-        jobApplications.push(job);
+        // check if user owns the job
+        if (job.getUserID() == userID) {
+            return false;
+        }
+
+        // apply for job
+        jobApplications.put(jobID, userID);
+
         return true;
     }
 
@@ -206,8 +192,43 @@ public class NeighbourHelper implements iNeighbourHelper {
         streetGraph.addEdge(street1, street2, distance);
     }
 
+    // If you can't change Graph.java at all, just return a simple path:
+
     @Override
-    public  Vector getDirections(int userID) {
-        return null;
+    public Vector getDirections(int userID) {
+        User user = (User) users.get(userID);
+        if (user == null) return null;
+
+        // Collect unique job locations
+        Vector jobStreets = new Vector(100);
+        for (int i = 1; i < currentJobId; i++) {
+            Integer applicant = (Integer) jobApplications.get(i);
+            if (applicant != null && applicant.equals(userID)) {
+                Job job = (Job) jobs.get(i);
+                if (job != null) {
+                    User owner = (User) users.get(job.getUserID());
+                    if (owner != null && !jobStreets.contains(owner.getStreet())) {
+                        jobStreets.addLast(owner.getStreet());
+                    }
+                }
+            }
+        }
+        // Build path starting from user's location
+        Vector fullPath = new Vector(100);
+        String current = user.getStreet();
+        fullPath.addLast(current);
+        // Add shortest path to each job location
+        for (int i = 0; i < jobStreets.size(); i++) {
+            String destination = (String) jobStreets.get(i);
+            Vector segment = streetGraph.dijkstraPath(current, destination);
+
+            // Add segment (skip first as it's already in path)
+            for (int j = 1; j < segment.size(); j++) {
+                fullPath.addLast(segment.get(j));
+            }
+            current = destination;
+        }
+
+        return fullPath;
     }
 }

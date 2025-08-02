@@ -120,6 +120,19 @@ public class    Vector {
         data = newData;
     }
 
+    // merge two vectors will be use in merging between paid and unpaid
+    public void mergeVector(Vector other) {
+        // cehck if we have enough capacity
+        if (count + other.size() > data.length) {
+            extendCapacity();
+        }
+
+        // copying all elements from the other vector
+        for (int i = 0; i < other.size(); i++) {
+            data[count++] = other.get(i);
+        }
+    }
+
     //converting the vector elements to a string representation
     @Override
     public String toString() {

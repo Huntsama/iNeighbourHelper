@@ -77,16 +77,111 @@ public class Graph<T extends Comparable<T>> {
         return null;
     }
 
+
     // adding an edge between two nodes in the graph
     public void addEdge(T nodeLabel1, T nodeLabel2, int weight) {
         Node<T> n1 = findNode(nodeLabel1);
         Node<T> n2 = findNode(nodeLabel2);
         if (n1 != null && n2 != null) {
             n1.addEdge(new Edge<>(n1, n2, weight));
+            n2.addEdge(new Edge<>(n2, n1, weight));
         }
     }
 
 
 
+    // this was is used to help check if node is in visited list
+    private boolean containsNode(Vector visited, T node) {
+        for (int i = 0; i < visited.size(); i++) {
+            if (visited.get(i).equals(node)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Vector dijkstraPath(T from, T to) {
+        // this edge case to handle source and destination
+        if (from.equals(to)) {
+            Vector path = new Vector(1);
+            path.addLast(from);
+            return path;
+        }
+
+        // Initialize distances and tracking structures
+        Dictionary distances = new Dictionary();
+        Dictionary previous = new Dictionary();
+        Vector visited = new Vector(nodes.size());
+
+        // Set all distances to infinity, except source
+        for (int i = 0; i < nodes.size(); i++) {
+            T label = ((Node<T>) nodes.get(i)).getLabel();
+            distances.add(label, label.equals(from) ? 0 : Integer.MAX_VALUE);
+        }
+
+        // Main algorithm loop
+        while (visited.size() < nodes.size()) {
+            // Find minimum distance unvisited node
+            T minNode = null;
+            int minDist = Integer.MAX_VALUE;
+
+            for (int i = 0; i < nodes.size(); i++) {
+                T label = ((Node<T>) nodes.get(i)).getLabel();
+                if (!containsNode(visited, label)) {
+                    Integer dist = (Integer) distances.find(label);
+                    if (dist != null && dist < minDist) {
+                        minDist = dist;
+                        minNode = label;
+                    }
+                }
+            }
+
+            // No reachable nodes left
+            if (minNode == null) break;
+
+            visited.addLast(minNode);
+
+            // Early exit if destination reached
+            if (minNode.equals(to)) break;
+
+            // Relax edges
+            Node<T> current = findNode(minNode);
+            for (int i = 0; i < current.edges.size(); i++) {
+                Edge<T> edge = (Edge<T>) current.edges.get(i);
+                T neighbor = edge.toNode.getLabel();
+
+                int newDist = minDist + edge.weight;
+                Integer oldDist = (Integer) distances.find(neighbor);
+
+                if (newDist < oldDist) {
+                    distances.add(neighbor, newDist);
+                    previous.add(neighbor, minNode);
+                }
+            }
+        }
+
+        // Reconstruct path
+        Vector path = new Vector(100);
+        T current = to;
+
+        // No path exists
+        if (previous.find(to) == null && !to.equals(from)) {
+            path.addLast(from);
+            return path;
+        }
+
+        // Build path backwards
+        while (current != null && !current.equals(from)) {
+            path.addFirst(current);
+            current = (T) previous.find(current);
+        }
+
+        // Add source if path found
+        if (current != null && current.equals(from)) {
+            path.addFirst(from);
+        }
+
+        return path;
+    }
 
 }
