@@ -1,5 +1,9 @@
 package DataStructure;
 
+/**
+ * Stack
+ */
+
 public class Stack {
     // vector for storing stack elements
     private Vector data;

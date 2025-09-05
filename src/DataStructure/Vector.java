@@ -1,6 +1,11 @@
 package DataStructure;
 
-public class    Vector {
+
+/**
+ * Vector
+ */
+
+public class  Vector {
     private Object[] data;
     private int count;
 
@@ -118,6 +123,23 @@ public class    Vector {
         }
         // updating it with the data reference to the new array
         data = newData;
+    }
+
+    // merger method that combines both vector1 first then vector2 used for the paid then upaid jobs list
+    public static Vector mergeTwoVectors(Vector v1, Vector v2) {
+        Vector result = new Vector(v1.size() + v2.size());
+
+        // adding  all elements from v1
+        for (int i = 0; i < v1.size(); i++) {
+            result.addLast(v1.get(i));
+        }
+
+        // adding all elements from v2
+        for (int i = 0; i < v2.size(); i++) {
+            result.addLast(v2.get(i));
+        }
+
+        return result;
     }
 
     //converting the vector elements to a string representation

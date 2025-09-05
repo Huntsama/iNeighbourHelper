@@ -1,4 +1,10 @@
 public class User {
+
+    /**
+     * The User class is an entity class and it stores id,name,email and the street
+     */
+
+
     // static counter for the unique id
     private int id;
 
@@ -18,6 +24,11 @@ public class User {
     // getting the user ID
     public int getId() {
         return id;
+    }
+
+    // getting the user street
+    public String getStreet() {
+        return street;
     }
 
     // converting user details to a string representation

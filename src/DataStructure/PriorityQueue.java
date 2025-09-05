@@ -1,5 +1,9 @@
 package DataStructure;
 
+/**
+ * PriorityQueue
+ */
+
 public class PriorityQueue {
 	// nested class representing an element with its priority
 	private class PriorityPair implements Comparable {

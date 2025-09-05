@@ -1,5 +1,8 @@
 package DataStructure;
 
+/**
+ * Queue
+ */
 public class Queue {
     // vector for storing queue elements
     private Vector data;

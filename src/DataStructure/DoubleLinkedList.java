@@ -1,5 +1,9 @@
 package DataStructure;
 
+/**
+ * Double linked list
+ */
+
 public class DoubleLinkedList {
     // nested class for elements of the double linked list
     private class DoubleLinkedListElement {
