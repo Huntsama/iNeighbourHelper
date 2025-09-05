@@ -5,11 +5,10 @@ public class Main {
         NeighbourHelper neighbourhelper = new NeighbourHelper();
 
         // adding users
-        int user1Id = neighbourhelper.addUser("MOURAD", "mourad@gmail.com", "casa 04");
-        int user2Id = neighbourhelper.addUser("mustapha", "mustapha@outlook.com", "mohemadia 17");
-        int user3Id = neighbourhelper.addUser("naima", "fahmi@hotmail.com", "settat 36");
-        int user4Id = neighbourhelper.addUser("naimaaa", "fahmi@hotmail.com", "settat 36");
-
+        int user1Id = neighbourhelper.addUser("MOURAD", "mourad@gmail.com", "casa");
+        int user2Id = neighbourhelper.addUser("mustapha", "mustapha@outlook.com", "mohemadia");
+        int user3Id = neighbourhelper.addUser("naima", "fahmi@hotmail.com", "settat");
+        int user4Id = neighbourhelper.addUser("aicha", "chahdi@hotmail.com", "fes");
 
         // adding jobs and linking them with the users
         int job1Id = neighbourhelper.addJob("cleaner", "clean the dishes", "kitchen", true, 5.5f, user1Id);
@@ -45,17 +44,13 @@ public class Main {
         }
         System.out.println(" ");
 
-
-
-        // find  available jobs In category
+        // find available jobs In category
         System.out.println("Available jobs in 'kitchen' category with paid jobs first:");
         Vector kitchenJobs = neighbourhelper.findAvailableJobsInCategory("kitchen");
         for (int i = 0; i < kitchenJobs.size(); i++) {
             System.out.println("Job " + (i + 1) + ": " + kitchenJobs.get(i));
         }
         System.out.println(" ");
-
-
 
         // testing apply For job method
         System.out.println("Applying for job 1 by user 2:");
@@ -84,26 +79,34 @@ public class Main {
         System.out.println("Job removed: " + removing);
         System.out.println("Jobs after removal:");
         neighbourhelper.printAllJobs();
-
-
         System.out.println(" ");
 
-
-        // add streets to the graph
-        neighbourhelper.addStreet("ixelle");
+        // adding streets
+        neighbourhelper.addStreet("casa");
+        neighbourhelper.addStreet("mohemadia");
+        neighbourhelper.addStreet("settat");
         neighbourhelper.addStreet("center");
-
-        // connect streets with distances
-        System.out.println("Connecting streets...");
-        neighbourhelper.connectStreets("ixelle", "center", 5);
+        neighbourhelper.addStreet("fes");
 
 
+        // conneting streets
+        neighbourhelper.connectStreets("casa", "center", 5);
+        neighbourhelper.connectStreets("mohemadia", "center", 7);
+        neighbourhelper.connectStreets("settat", "center", 4);
+        neighbourhelper.connectStreets("fes", "center", 5);
+        neighbourhelper.connectStreets("casa", "mohemadia", 8);
+        neighbourhelper.connectStreets("settat", "fes", 15);
 
-
+        // getting the shortest path
+        Vector path = neighbourhelper.getDirections(user2Id);
+        for (int i = 0; i < path.size(); i++) {
+            System.out.print(path.get(i));
+            if (i < path.size() - 1) {
+                System.out.print(" => ");
+            }
+        }
+        System.out.println();
 
     }
-
-
-
 
 }

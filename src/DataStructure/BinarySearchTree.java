@@ -1,5 +1,9 @@
 package DataStructure;
 
+/**
+ * Binary search tree
+ */
+
 public class BinarySearchTree {
 
     // class representing a tree node
@@ -61,7 +65,6 @@ public class BinarySearchTree {
         if (current == null) {
             return new TreeNode(key, value);
         }
-
         int cmp = key.compareTo(current.getKey());
         // navigate to the left or right based on comparison
         if (cmp < 0) {
@@ -85,7 +88,6 @@ public class BinarySearchTree {
         if (current == null) {
             return null;
         }
-
         // compare the key with the current node's key
         int cmp = key.compareTo(current.getKey());
         if (cmp < 0) {
@@ -110,7 +112,6 @@ public class BinarySearchTree {
         if (current == null) {
             return null;
         }
-
         // compare the key with the current node's key
         int cmp = key.compareTo(current.getKey());
         if (cmp < 0) {
@@ -129,19 +130,15 @@ public class BinarySearchTree {
                 // no right child, return left child
                 return current.getLeftTree();
             }
-
             // node has two children
             // find the smallest node in the right subtree
             TreeNode smallestNode = findMinNode(current.getRightTree());
-
             // replace current node's key and value with smallest node's key and value
             current.key = smallestNode.getKey();
             current.value = smallestNode.getValue();
-
             // delete the smallest node in the right subtree
             current.rightNode = deleteNode(smallestNode.getKey(), current.getRightTree());
         }
-
         // return the updated node
         return current;
     }
@@ -171,7 +168,6 @@ public class BinarySearchTree {
         if (node == null) {
             return 0;
         }
-
         // count the current node and recursively count left and right subtrees
         return 1 + size(node.getLeftTree()) + size(node.getRightTree());
     }

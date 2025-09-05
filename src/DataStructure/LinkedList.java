@@ -1,6 +1,10 @@
 package DataStructure;
 
-public class    LinkedList<E extends Comparable<E>> {
+/**
+ *  Linked list
+ */
+
+public class LinkedList<E extends Comparable<E>> {
 
     // nested class for elements of the linked list
     private class ListElement {

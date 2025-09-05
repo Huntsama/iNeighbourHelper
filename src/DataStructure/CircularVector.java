@@ -1,5 +1,9 @@
 package DataStructure;
 
+/**
+ * circular vectors
+ */
+
 public class CircularVector {
     // array for storing elements in circular vector
     private Object data[];

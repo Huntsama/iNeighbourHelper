@@ -1,4 +1,9 @@
 public class Job {
+
+    /**
+     * The Job class is an entity class and it stores id,name,email and the street
+     */
+
     // removing the static  counter for the unique id
     private int id;
     private String title;

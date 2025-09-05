@@ -1,5 +1,9 @@
 package DataStructure;
 
+/**
+ * dictonnary
+ */
+
 public class Dictionary {
     // counter for the number of key-value pairs in the dictionary
     private int Count;
@@ -46,13 +50,24 @@ public class Dictionary {
 
     // initializing an empty dictionary
     public Dictionary() {
-        this.data = new Vector(10);
+        this.data = new Vector(100);
     }
 
-    // adding a new key-value pair to the dictionary
+    // adding or updating the key value pair in the dictionary
     public void add(Object key, Object value) {
-        DictionaryPair pair = new DictionaryPair(key, value);
-        data.addLast(pair);
+        // check if key already exists
+        for (int i = 0; i < data.size(); i++) {
+            DictionaryPair pair = (DictionaryPair) data.get(i);
+            if (pair.getKey().equals(key)) {
+                // if the key exists then update the value
+                pair.setValue(value);
+                return;
+            }
+        }
+
+        // key doesnt exist, add new pair
+        DictionaryPair newPair = new DictionaryPair(key, value);
+        data.addLast(newPair);
         this.Count++;
     }
 
@@ -78,16 +93,6 @@ public class Dictionary {
         return null;
     }
 
-//    // removing a key-value pair from the dictionary
-//    public void removeKey(Object key) {
-//        for (int i = 0; i < data.size(); i++) {
-//            DictionaryPair pair = (DictionaryPair) data.get(i);
-//            if (pair.getKey().equals(key)) {
-//                data.removeByObject(pair);
-//            }
-//        }
-//        this.Count--;
-//    }
 
     // returning the number of key-value pairs in the dictionary
     public int size() {
