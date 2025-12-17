@@ -1,4 +1,4 @@
-import DataStructure.DictionaryTreeController;
+import DataStructure.BalancedTree;
 import DataStructure.Vector;
 import DataStructure.Graph;
 
@@ -10,9 +10,9 @@ import DataStructure.Graph;
 
 public class NeighbourHelper implements iNeighbourHelper {
     // data structures to store application data
-    private DictionaryTreeController users;
-    private DictionaryTreeController jobs;
-    private DictionaryTreeController jobApplications;
+    private BalancedTree users;
+    private BalancedTree jobs;
+    private BalancedTree jobApplications;
     private Graph<String> streetGraph;
 
 
@@ -25,9 +25,9 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
 
     public NeighbourHelper() {
-        users = new DictionaryTreeController();
-        jobs = new DictionaryTreeController();
-        jobApplications = new DictionaryTreeController();
+        users = new BalancedTree();
+        jobs = new BalancedTree();
+        jobApplications = new BalancedTree();
         streetGraph = new Graph<>();
     }
 
@@ -44,7 +44,7 @@ public class NeighbourHelper implements iNeighbourHelper {
         // Create a new User object with the current userID
         User user = new User(currentUserId, name, email, street);
         // Add the user to the  DictionaryTreeController using the ID as the key
-        users.put(currentUserId, user);
+        users.insert(currentUserId, user);
         return currentUserId++;
     }
 
@@ -61,13 +61,13 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
     @Override
     public int addJob(String title, String description, String category, boolean isPaid, float price, int userID) {
-        User user = (User) users.get(userID); // Check if the user exists
+        User user = (User) users.search(userID); // Check if the user exists
         if (user == null) {
             return -1; // User does not exist
         }
         Job job = new Job(currentJobId, title, description, category, isPaid, price);
         job.setUserID(userID); // Link the job to the user who posted it
-        jobs.put(currentJobId, job);
+        jobs.insert(currentJobId, job);
         return currentJobId++;
     }
 
@@ -77,13 +77,11 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
     @Override
     public void printAllUsers() {
-        // print all users
-        for (int i = 1; i <= users.size(); i++) {
-            User user = (User) users.get(i);
-            if (user != null) {
-                System.out.println(user);
-            }
-        }
+        System.out.println("list of the users:");
+        // OPTIMIZATION: O(N) Traversal
+        users.traverse((value, key) -> {
+            System.out.println(value);
+        });
     }
 
     /**
@@ -92,13 +90,11 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
     @Override
     public void printAllJobs() {
-        // print all jobs
-        for (int i = 1; i <= jobs.size(); i++) {
-            Job job = (Job) jobs.get(i);
-            if (job != null) {
-                System.out.println(job);
-            }
-        }
+        System.out.println("list of the jobs:");
+        // OPTIMIZATION: O(N) Traversal
+        jobs.traverse((value, key) -> {
+            System.out.println(value);
+        });
     }
 
     /**
@@ -110,7 +106,7 @@ public class NeighbourHelper implements iNeighbourHelper {
     @Override
     public User findUser(int userID) {
         // finding the user from the  DictionaryTreeController userID
-        User user = (User) users.get(userID);
+        User user = (User) users.search(userID);
         if (user != null) {
             return user;
         } else {
@@ -127,7 +123,7 @@ public class NeighbourHelper implements iNeighbourHelper {
     @Override
     public Job findJob(int jobID) {
         // finding the job from the  DictionaryTreeController using jobID
-        Job job = (Job) jobs.get(jobID);
+        Job job = (Job) jobs.search(jobID);
         if (job != null) {
             return job;
         } else {
@@ -147,10 +143,10 @@ public class NeighbourHelper implements iNeighbourHelper {
 
         // loop through all jobs
         for (int i = 1; i <= jobs.size(); i++) {
-            Job job = (Job) jobs.get(i);
+            Job job = (Job) jobs.search(i);
 
             // Check if job exists and is not taken
-            if (job != null && jobApplications.get(i) == null) {
+            if (job != null && jobApplications.search(i) == null) {
                 if (job.getIsPaid()) {
                     paidJobs.addLast(job);
                 } else {
@@ -172,11 +168,11 @@ public class NeighbourHelper implements iNeighbourHelper {
         Vector unpaidJobs = new Vector(100);
 
         for (int i = 1; i <= jobs.size(); i++) {
-            Job job = (Job) jobs.get(i);
+            Job job = (Job) jobs.search(i);
 
             // Check category and availability
             if (job != null &&
-                    jobApplications.get(i) == null &&
+                    jobApplications.search(i) == null &&
                     job.getCategory().equalsIgnoreCase(category)) {
 
                 if (job.getIsPaid()) {
@@ -198,14 +194,13 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
     @Override
     public boolean removeJob(int jobID) {
-        Job job = (Job) jobs.get(jobID);
+        Job job = (Job) jobs.search(jobID);
 
         if (job != null) {
-            jobs.remove(jobID);
-            jobApplications.remove(jobID);
+            jobs.delete(jobID);
+            jobApplications.delete(jobID);
             return true;
         }
-
         return false;
     }
 
@@ -218,14 +213,14 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
     @Override
     public boolean applyForJob(int userID, int jobID) {
-        User user = (User) users.get(userID);
-        Job job = (Job) jobs.get(jobID);
+        User user = (User) users.search(userID);
+        Job job = (Job) jobs.search(jobID);
 
         if (user == null || job == null) {
             return false;
         }
         // chech if already applied
-        if (jobApplications.get(jobID) != null) {
+        if (jobApplications.search(jobID) != null) {
             return false;
         }
         // check if user owns the job
@@ -233,7 +228,7 @@ public class NeighbourHelper implements iNeighbourHelper {
             return false;
         }
         // apply for job
-        jobApplications.put(jobID, userID);
+        jobApplications.insert(jobID, userID);
         return true;
     }
 
@@ -267,19 +262,19 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
     @Override
     public Vector getDirections(int userID) {
-        User user = (User) users.get(userID);
+        User user = (User) users.search(userID);
         if (user == null) return null;
 
         // looking through all jobs to find one this user applied for
         for (int jobId = 1; jobId < currentJobId; jobId++) {
-            Integer applicant = (Integer) jobApplications.get(jobId);
+            Integer applicant = (Integer) jobApplications.search(jobId);
 
             // finding a job this user applied for
             if (applicant != null && applicant == userID) {
-                Job job = (Job) jobs.get(jobId);
-                User jobOwner = (User) users.get(job.getUserID());
+                Job job = (Job) jobs.search(jobId);
+                User jobOwner = (User) users.search(job.getUserID());
 
-                // get path from user street to job owner street
+                // search path from user street to job owner street
                 return streetGraph.dijkstraPath(user.getStreet(), jobOwner.getStreet());
             }
         }
