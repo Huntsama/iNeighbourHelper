@@ -2,7 +2,7 @@ package DataStructure;
 
 // balanced binary search tree
 // extends binary search tree and adds simple rebalancing
-public class BalencedTree extends Tree {
+public class BalancedTree extends Tree {
 
     // count nodes in left subtree of a node
     private int countLeft(TreeNode node) {

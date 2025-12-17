@@ -2,6 +2,9 @@ package DataStructure;
 
 public class Tree {
     // node of tree
+    public interface Visitor {
+        void visit(Object value, Comparable key);
+    }
     public class TreeNode {
         private Comparable key;
         private Object value;
@@ -20,7 +23,7 @@ public class Tree {
         }
 
         // set left child
-        public void setLeftTree(TreeNode left) {
+        public void setLeftTree(TreeNode left)  {
             this.leftNode = left;
         }
 
@@ -48,10 +51,14 @@ public class Tree {
         public void setValue(Object value) {
             this.value = value;
         }
+
+
     }
 
     // root of tree
     protected TreeNode root;
+
+
 
     // create empty tree
     public Tree() {
@@ -154,6 +161,16 @@ public class Tree {
         return 1 + size(node.getLeftTree()) + size(node.getRightTree());
     }
 
+    public void traverse(Visitor visitor) {
+        traverseInOrderRec(root, visitor);
+    }
 
+    private void traverseInOrderRec(TreeNode node, Visitor visitor) {
+        if (node == null) return;
+
+        traverseInOrderRec(node.getLeftTree(), visitor); // Left
+        visitor.visit(node.getValue(), node.getKey());   // Root (Action)
+        traverseInOrderRec(node.getRightTree(), visitor);// Right
+    }
 
 }
