@@ -1,4 +1,4 @@
-import DataStructure.BalancedTree;
+import DataStructure.DictionaryTree;
 import DataStructure.Vector;
 import DataStructure.Graph;
 
@@ -10,9 +10,9 @@ import DataStructure.Graph;
 
 public class NeighbourHelper implements iNeighbourHelper {
     // data structures to store application data
-    private BalancedTree users;
-    private BalancedTree jobs;
-    private BalancedTree jobApplications;
+    private DictionaryTree users;
+    private DictionaryTree jobs;
+    private DictionaryTree jobApplications;
     private Graph<String> streetGraph;
 
 
@@ -25,9 +25,9 @@ public class NeighbourHelper implements iNeighbourHelper {
      */
 
     public NeighbourHelper() {
-        users = new BalancedTree();
-        jobs = new BalancedTree();
-        jobApplications = new BalancedTree();
+        users = new DictionaryTree();
+        jobs = new DictionaryTree();
+        jobApplications = new DictionaryTree();
         streetGraph = new Graph<>();
     }
 
@@ -66,7 +66,7 @@ public class NeighbourHelper implements iNeighbourHelper {
             return -1; // User does not exist
         }
         Job job = new Job(currentJobId, title, description, category, isPaid, price);
-        job.setUserID(userID); // Link the job to the user who posted it
+        job.setUser(user); // Link the job to the user who posted it
         jobs.insert(currentJobId, job);
         return currentJobId++;
     }
@@ -78,8 +78,7 @@ public class NeighbourHelper implements iNeighbourHelper {
     @Override
     public void printAllUsers() {
         System.out.println("list of the users:");
-        // OPTIMIZATION: O(N) Traversal
-        users.traverse((value, key) -> {
+        users.traverseDictionary((value, key) -> {
             System.out.println(value);
         });
     }
@@ -91,8 +90,7 @@ public class NeighbourHelper implements iNeighbourHelper {
     @Override
     public void printAllJobs() {
         System.out.println("list of the jobs:");
-        // OPTIMIZATION: O(N) Traversal
-        jobs.traverse((value, key) -> {
+        jobs.traverseDictionary((value, key) -> {
             System.out.println(value);
         });
     }
@@ -224,7 +222,7 @@ public class NeighbourHelper implements iNeighbourHelper {
             return false;
         }
         // check if user owns the job
-        if (job.getUserID() == userID) {
+        if (job.getUser() != null && job.getUser().getId() == userID) {
             return false;
         }
         // apply for job
@@ -272,7 +270,7 @@ public class NeighbourHelper implements iNeighbourHelper {
             // finding a job this user applied for
             if (applicant != null && applicant == userID) {
                 Job job = (Job) jobs.search(jobId);
-                User jobOwner = (User) users.search(job.getUserID());
+                User jobOwner = job.getUser();
 
                 // search path from user street to job owner street
                 return streetGraph.dijkstraPath(user.getStreet(), jobOwner.getStreet());

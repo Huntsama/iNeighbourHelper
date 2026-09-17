@@ -5,7 +5,7 @@ public class User {
      */
 
 
-    // static counter for the unique id
+    // unique id assigned by NeighbourHelper
     private int id;
 
     // user details

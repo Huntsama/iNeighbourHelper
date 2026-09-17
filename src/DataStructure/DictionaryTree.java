@@ -1,36 +1,84 @@
 package DataStructure;
 
-public class DictionaryTree {
-    // binary search tree for storing key-value pairs
-    private BinarySearchTree bst;
+public class DictionaryTree extends BalancedTree {
 
-    // initializing an empty dictionary tree
-    public DictionaryTree() {
-        bst = new BinarySearchTree();
+    public interface DictionaryVisitor {
+        void visit(Object value, Comparable key);
     }
 
-    // inserting or updating a key-value pair
-    public void put(Comparable key, Object value) {
-        bst.insert(key, value);
+
+    // nested class for dictionary key-value pairs
+    private class DictionaryPair implements Comparable<DictionaryPair> {
+        private Comparable key;
+        private Object value;
+
+        // constructor to create a dictionary pair
+        public DictionaryPair(Comparable key, Object value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        // getting the key of the dictionary pair
+        public Comparable getKey() {
+            return this.key;
+        }
+
+        // setting a new key for the dictionary pair
+        public void setKey(Comparable key) {
+            this.key = key;
+        }
+
+        // getting the value of the dictionary pair
+        public Object getValue() {
+            return this.value;
+        }
+
+        // setting a new value for the dictionary pair
+        public void setValue(Object value) {
+            this.value = value;
+        }
+
+        // comparing dictionary pairs based on their keys
+        @Override
+        public int compareTo(DictionaryPair other) {
+            return this.key.compareTo(other.key);
+        }
+
+        @Override
+        public String toString() {
+            return value.toString();
+        }
     }
 
-    // retrieving the value associated with a key
-    public Object get(Comparable key) {
-        return bst.search(key);
+
+    public void insert(Comparable key, Object value) {
+        DictionaryPair pair = new DictionaryPair(key, value);
+        super.insert(pair);
     }
 
-    // removing a key-value pair
-    public void remove(Comparable key) {
-        bst.delete(key);
+
+    @Override
+    public Object search(Comparable key) {
+        // create a temporary pair just for searching
+        DictionaryPair searchKey = new DictionaryPair(key, null);
+
+        // the generic tree to find it
+        DictionaryPair result = (DictionaryPair) super.search(searchKey);
+
+        return result == null ? null : result.value;
     }
 
-    // checking if the dictionary is empty
-    public boolean isEmpty() {
-        return bst.isEmpty();
+    @Override
+    public void delete(Comparable key) {
+        DictionaryPair searchKey = new DictionaryPair(key, null);
+        super.delete(searchKey);
     }
 
-    // getting the number of key-value pairs
-    public int size() {
-        return bst.size();
+
+    public void traverseDictionary(DictionaryVisitor visitor) {
+        super.traverse(item -> {
+            DictionaryPair pair = (DictionaryPair) item;
+            visitor.visit(pair.value, pair.key);
+        });
     }
 }

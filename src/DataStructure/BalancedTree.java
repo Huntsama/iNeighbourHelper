@@ -59,8 +59,8 @@ public class BalancedTree extends Tree {
 
     // insert with simple balancing
     @Override
-    public void insert(Comparable key, Object value) {
-        super.insert(key, value);
+    public void insert(Comparable value) {
+        super.insert(value);
         root = rebalance(root);
     }
 
