@@ -4,14 +4,14 @@ public class Job {
      * The Job class is an entity class and it stores id,name,email and the street
      */
 
-    // removing the static  counter for the unique id
+    // unique id assigned by NeighbourHelper
     private int id;
     private String title;
     private String description;
     private String category;
     private boolean isPaid;
     private float price;
-    private int userID;
+    private User user;
 
     public Job(int id, String title, String description, String category, boolean isPaid, float price) {
         this.id = id;
@@ -36,14 +36,14 @@ public class Job {
         return isPaid;
     }
 
-    // Getter for userID
-    public int getUserID() {
-        return userID;
+    // Getter for user
+    public User getUser() {
+        return user;
     }
 
-    // Setter for userID
-    public void setUserID(int userID) {
-        this.userID = userID;
+    // Setter for user
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
