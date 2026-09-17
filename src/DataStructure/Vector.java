@@ -142,6 +142,8 @@ public class  Vector {
         return result;
     }
 
+
+
     //converting the vector elements to a string representation
     @Override
     public String toString() {

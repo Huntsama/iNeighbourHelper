@@ -1,10 +1,12 @@
 package DataStructure;
 
-// balanced binary search tree
-// extends binary search tree and adds simple rebalancing
+/**
+ * balanced tree implementation
+ * extends the standard tree to add basic rebalancing logic
+ */
 public class BalancedTree extends Tree {
 
-    // count nodes in left subtree of a node
+    // helper to count nodes on the left side
     private int countLeft(TreeNode node) {
         if (node == null || node.getLeftTree() == null) {
             return 0;
@@ -12,7 +14,7 @@ public class BalancedTree extends Tree {
         return 1 + size(node.getLeftTree());
     }
 
-    // count nodes in right subtree of a node
+    // helper to count nodes on the right side
     private int countRight(TreeNode node) {
         if (node == null || node.getRightTree() == null) {
             return 0;
@@ -20,7 +22,7 @@ public class BalancedTree extends Tree {
         return 1 + size(node.getRightTree());
     }
 
-    // left rotation
+    // performing a left rotation to fix balance
     private TreeNode rotateLeft(TreeNode node) {
         if (node == null || node.getRightTree() == null) {
             return node;
@@ -31,7 +33,7 @@ public class BalancedTree extends Tree {
         return newRoot;
     }
 
-    // right rotation
+    // performing a right rotation to fix balance
     private TreeNode rotateRight(TreeNode node) {
         if (node == null || node.getLeftTree() == null) {
             return node;
@@ -42,29 +44,33 @@ public class BalancedTree extends Tree {
         return newRoot;
     }
 
-    // rebalance around this node with one rotation if needed
+    // checking if the tree needs rebalancing at this node
     private TreeNode rebalance(TreeNode node) {
         if (node == null) {
             return null;
         }
         int leftCount = countLeft(node);
         int rightCount = countRight(node);
+
+        // if right side is too heavy, rotate left
         if (rightCount > leftCount + 2) {
             node = rotateLeft(node);
-        } else if (leftCount > rightCount + 2) {
+        }
+        // if left side is too heavy, rotate right
+        else if (leftCount > rightCount + 2) {
             node = rotateRight(node);
         }
         return node;
     }
 
-    // insert with simple balancing
+    // inserting a value and then rebalancing
     @Override
-    public void insert(Comparable key, Object value) {
-        super.insert(key, value);
+    public void insert(Comparable value) {
+        super.insert(value);
         root = rebalance(root);
     }
 
-    // delete with simple balancing
+    // deleting a key and then rebalancing
     @Override
     public void delete(Comparable key) {
         super.delete(key);

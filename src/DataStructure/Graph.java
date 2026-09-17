@@ -1,60 +1,73 @@
 package DataStructure;
 
 /**
- * Graph implementation with dijkstra's shortest path algorithm.
+ * graph implementation with dijkstra's shortest path algorithm
  *
- * inspired by and learned from:
- * - codecademy dijkstra's algorithm tutorial: https://www.codecademy.com/learn/graph-data-structures-java/modules/dijkstras-algorithm-java/cheatsheet
- * - youtube video explanation by rohan singh: https://www.youtube.com/watch?v=9P7K_WabJy8&ab_channel=RohanSingh
- *  https://algs4.cs.princeton.edu/44sp/
+ * https://algs4.cs.princeton.edu/44sp/
  *
  */
+public class Graph {
 
-public class Graph<T extends Comparable<T>> {
-    // nested class representing a node in the graph
-    public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
-        private T info; // node information
-        private Vector edges; // edges connected to this node
+    // nested class representing a node in the graph (matching the template)
+    public class Node implements Comparable {
+        private Comparable info;
+        private Vector edges;
 
         // initializing node with a label
-        public Node(T label) {
-            this.info = label;
-            this.edges = new Vector(10);
+        public Node(Comparable label) {
+            info = label;
+            edges = new Vector(100);
         }
 
         // adding an edge to this node
-        public void addEdge(Edge<T> e) {
+        public void addEdge(Edge e) {
             edges.addLast(e);
         }
 
+        // comparing this node with another based on their labels
+        public int compareTo(Object o) {
+            // two nodes are equal if they have the same label
+            Node n = (Node) o;
+            return n.info.compareTo(info);
+        }
+
         // getting the label of this node
-        public T getLabel() {
+        public Comparable getLabel() {
             return info;
         }
 
-        // comparing this node with another based on their labels
-        @Override
-        public int compareTo(Node<T> o) {
-            return o.info.compareTo(info);
+        // helper method to get edges list
+        public Vector getEdges() {
+            return edges;
         }
     }
 
-    // nested class representing an edge in the graph
-    private class Edge<T extends Comparable<T>> implements Comparable<Edge<T>> {
-        private Node<T> toNode; // destination node
-        private Node<T> fromNode; // source node
-        private int weight; // weight of the edge
+    // nested class representing an edge (matching the template)
+    private class Edge implements Comparable {
+        private Node toNode;
+        // added weight because we need it for calculating distance
+        private int weight;
 
-        // initializing edge with source, destination, and weight
-        public Edge(Node<T> from, Node<T> to, int weight) {
-            this.fromNode = from;
-            this.toNode = to;
+        // initializing edge with destination and weight
+        public Edge(Node to, int weight) {
+            toNode = to;
             this.weight = weight;
         }
 
-        // comparing this edge with another based on their destination nodes
-        public int compareTo(Edge<T> o) {
-            return o.toNode.compareTo(toNode);
+        // comparing edges based on destination node
+        public int compareTo(Object o) {
+            Edge n = (Edge) o;
+            return n.toNode.compareTo(toNode);
+        }
+
+        // getting the destination node
+        public Node getToNode() {
+            return toNode;
+        }
+
+        // getting the weight of the edge
+        public int getWeight() {
+            return weight;
         }
     }
 
@@ -66,50 +79,49 @@ public class Graph<T extends Comparable<T>> {
     }
 
     // adding a node to the graph
-    public void addNode(T label) {
-        nodes.addLast(new Node<>(label));
-    }
-
-
-    // returning the number of nodes in the graph
-    public int nodesNum() {
-        return nodes.size();
+    public void addNode(Comparable label) {
+        nodes.addLast(new Node(label));
     }
 
     // finding a node by its label
-    private Node<T> findNode(T nodeLabel) {
+    private Node findNode(Comparable nodeLabel) {
+        Node res = null;
         for (int i = 0; i < nodes.size(); i++) {
-            Node<T> n = (Node<T>) nodes.get(i);
+            Node n = (Node) nodes.get(i);
+            // using equals instead of == for safer string comparison
             if (n.getLabel().equals(nodeLabel)) {
-                return n;
+                res = n;
+                break;
             }
         }
-        return null;
+        return res;
     }
 
+    // adding an edge between two nodes with a weight
+    public void addEdge(Comparable nodeLabel1, Comparable nodeLabel2, int weight) {
+        Node n1 = findNode(nodeLabel1);
+        Node n2 = findNode(nodeLabel2);
 
-    // adding an edge between two nodes in the graph
-    public void addEdge(T nodeLabel1, T nodeLabel2, int weight) {
-        Node<T> n1 = findNode(nodeLabel1);
-        Node<T> n2 = findNode(nodeLabel2);
         if (n1 != null && n2 != null) {
-            n1.addEdge(new Edge<>(n1, n2, weight));
-            n2.addEdge(new Edge<>(n2, n1, weight));
+            // connecting n1 to n2
+            n1.addEdge(new Edge(n2, weight));
+            // connecting n2 to n1 (since streets are two-way)
+            n2.addEdge(new Edge(n1, weight));
         }
     }
 
-    public Vector dijkstraPath(T from, T to) {
+    // dijkstra's shortest path algorithm
+    public Vector dijkstraPath(Comparable from, Comparable to) {
         // creating my data structures to track the algorithm
-        // stores distance to each node
         Dictionary distances = new Dictionary();
         Dictionary previousNode = new Dictionary();
         // nodes we already processed
         Vector visited = new Vector(nodes.size());
 
-        // start node gets 0 everything else gets infinity (MAX_VALUE)
+        // start node gets 0 distance, everything else gets max value
         for (int i = 0; i < nodes.size(); i++) {
-            Node<T> node = (Node<T>) nodes.get(i);
-            T label = node.getLabel();
+            Node node = (Node) nodes.get(i);
+            Comparable label = node.getLabel();
             if (label.equals(from)) {
                 distances.add(label, 0);
             } else {
@@ -117,99 +129,89 @@ public class Graph<T extends Comparable<T>> {
             }
         }
 
-        //keep going until we visit all nodes
+        // keep going until we visit all nodes
         while (visited.size() < nodes.size()) {
-            // find the unvisited node with smalest  distance
-            T currentNode = null;
+            Comparable currentNodeLabel = null;
             int smallestDistance = Integer.MAX_VALUE;
 
-            // looking  through all nodes
+            // looking through all nodes to find the unvisited one with smallest distance
             for (int i = 0; i < nodes.size(); i++) {
-                Node<T> node = (Node<T>) nodes.get(i);
-                T nodeLabel = node.getLabel();
-                // checking if we already visited this node or not
-                boolean alreadyVisited = false;
+                Node node = (Node) nodes.get(i);
+                Comparable label = node.getLabel();
+
+                // checking if we already visited this node
+                boolean isVisited = false;
                 for (int j = 0; j < visited.size(); j++) {
-                    if (visited.get(j).equals(nodeLabel)) {
-                        alreadyVisited = true;
+                    if (visited.get(j).equals(label)) {
+                        isVisited = true;
                         break;
                     }
                 }
 
-                // if not visited then check if it has the smallest distance
-                if (!alreadyVisited) {
-                    Integer nodeDistance = (Integer) distances.find(nodeLabel);
-                    if (nodeDistance != null && nodeDistance < smallestDistance) {
-                        smallestDistance = nodeDistance;
-                        currentNode = nodeLabel;
+                // if not visited then check if it is the closest one
+                if (!isVisited) {
+                    Integer dist = (Integer) distances.find(label);
+                    if (dist != null && dist < smallestDistance) {
+                        smallestDistance = dist;
+                        currentNodeLabel = label;
                     }
                 }
             }
 
-            // after there is no nmore nodes found stop
-            if (currentNode == null) {
-                break;
-            }
+            // if no more reachable nodes, stop
+            if (currentNodeLabel == null) break;
 
             // marking this node as visited
-            visited.addLast(currentNode);
+            visited.addLast(currentNodeLabel);
 
-            // once destination reached  stop
-            if (currentNode.equals(to)) {
-                break;
-            }
+            // if we reached the destination, stop
+            if (currentNodeLabel.equals(to)) break;
 
-            // checking all neighbors and update their distances
-            Node<T> current = findNode(currentNode);
+            Node current = findNode(currentNodeLabel);
 
-            // looking at each edge from current node
-            for (int i = 0; i < current.edges.size(); i++) {
-                Edge<T> edge = (Edge<T>) current.edges.get(i);
-                T neighbor = edge.toNode.getLabel();
+            // checking all neighbors and updating their distances
+            for (int i = 0; i < current.getEdges().size(); i++) {
+                Edge edge = (Edge) current.getEdges().get(i);
+                Comparable neighborLabel = edge.getToNode().getLabel();
+                int weight = edge.getWeight();
 
-                // calculating the new distance through current node
-                int distanceThroughCurrent = smallestDistance + edge.weight;
-                Integer neighborCurrentDistance = (Integer) distances.find(neighbor);
+                // calculating new distance
+                int newDist = smallestDistance + weight;
+                Integer currentNeighborDist = (Integer) distances.find(neighborLabel);
 
-                // when found a shorter path then  update it
-                if (distanceThroughCurrent < neighborCurrentDistance) {
-                    distances.add(neighbor, distanceThroughCurrent);
-                    previousNode.add(neighbor, currentNode);  // Remember we came from currentNode
+                // if we found a shorter path, update it
+                if (newDist < currentNeighborDist) {
+                    distances.add(neighborLabel, newDist);
+                    previousNode.add(neighborLabel, currentNodeLabel);
                 }
             }
         }
 
-        // buiilding the actual path by going backwards
-        Vector path = buildPath(from, to, previousNode);
-        return path;
+        // building the actual path
+        return buildPath(from, to, previousNode);
     }
 
-    // method to build the path from start to end  ussing the previousNode
-    private Vector buildPath(T start, T end, Dictionary previous) {
+    // helper method to build the path backwards using previousNode dictionary
+    private Vector buildPath(Comparable start, Comparable end, Dictionary previous) {
         Vector path = new Vector(100);
 
         // checking if a path exists
         if (previous.find(end) == null && !end.equals(start)) {
-            // if nothing found just return start node
             path.addLast(start);
             return path;
         }
 
-        // building the path backwards from end to start
-        T current = end;
-
-        // start going backwards until we reach the start
+        Comparable current = end;
+        // going backwards until we reach the start
         while (current != null && !current.equals(start)) {
             path.addFirst(current);
-            current = (T) previous.find(current);
+            current = (Comparable) previous.find(current);
         }
 
         // adding the starting node
         if (current != null && current.equals(start)) {
             path.addFirst(start);
         }
-
         return path;
     }
-
 }

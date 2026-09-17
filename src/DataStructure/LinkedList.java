@@ -1,68 +1,67 @@
 package DataStructure;
 
 /**
- *  Linked list
+ * linked list
  */
-
-public class LinkedList<E extends Comparable<E>> {
+public class LinkedList {
 
     // nested class for elements of the linked list
     private class ListElement {
         private Object el1; // element data
         private ListElement el2; // reference to next element
 
-        // constructor to create a list element with data and reference to next
+        // constructor with data and next reference
         public ListElement(Object el, ListElement nextElement) {
             el1 = el;
             el2 = nextElement;
         }
 
-        // constructor to create a list element with only data
+        // constructor with only data
         public ListElement(Object el) {
             this(el, null);
         }
 
-        // getting data of the element
+        // getting data
         public Object first() {
             return el1;
         }
 
-        // getting reference to next element
+        // getting next element reference
         public ListElement rest() {
             return el2;
         }
 
-        // setting data of the element
+        // setting data
         public void setFirst(Object value) {
             el1 = value;
         }
 
-        // setting reference to next element
+        // setting next element reference
         public void setRest(ListElement value) {
             el2 = value;
         }
     }
 
-    private ListElement head; // head of the linked list
-    private int count; // count of elements in the list
+    private ListElement head; // head of the list
+    private int count; // number of elements
 
     // initializing an empty linked list
     public LinkedList() {
         head = null;
     }
 
-    // adding an element to the beginning of the list
+    // adding an element to the beginning
     public void addFirst(Object o) {
         head = new ListElement(o, head);
         count++;
     }
 
-    // getting the first element of the list
+    // getting the first element
     public Object getFirst() {
         return head.first();
     }
 
-    // getting the last element of the list
+    // getting the last element
     public Object getLast() {
         ListElement d = head;
         while (d.rest() != null) {
@@ -71,7 +70,7 @@ public class LinkedList<E extends Comparable<E>> {
         return d.first();
     }
 
-    // getting an element at a specific position
+    // getting element at specific position
     public Object get(int n) {
         ListElement d = head;
         while (n > 0) {
@@ -81,7 +80,7 @@ public class LinkedList<E extends Comparable<E>> {
         return d.first();
     }
 
-    // converting the list to a string representation
+    // converting to string
     public String toString() {
         String s = "(";
         ListElement d = head;
@@ -94,12 +93,12 @@ public class LinkedList<E extends Comparable<E>> {
         return s;
     }
 
-    // getting the number of elements in the list
+    // getting number of elements
     public int size() {
         return count;
     }
 
-    // removing the first element from the list
+    // removing the first element
     public void removeFirst() {
         if (head != null) {
             ListElement second = head.el2;
@@ -109,7 +108,7 @@ public class LinkedList<E extends Comparable<E>> {
         }
     }
 
-    // checking if the list is empty
+    // checking if empty
     public boolean isEmpty() {
         return size() == 0;
     }

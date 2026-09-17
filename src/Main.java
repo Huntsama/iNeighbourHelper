@@ -19,11 +19,9 @@ public class Main {
         System.out.println(" ");
 
         // priting the jobs and the users
-        System.out.println("list of the users:");
         neighbourhelper.printAllUsers();
         System.out.println(" ");
 
-        System.out.println("list of the jobs:");
         neighbourhelper.printAllJobs();
         System.out.println(" ");
 
@@ -94,7 +92,7 @@ public class Main {
         neighbourhelper.connectStreets("mohemadia", "center", 7);
         neighbourhelper.connectStreets("settat", "center", 4);
         neighbourhelper.connectStreets("fes", "center", 5);
-        neighbourhelper.connectStreets("casa", "mohemadia", 8);
+        neighbourhelper.connectStreets("casa", "mohemadia", 20);
         neighbourhelper.connectStreets("settat", "fes", 15);
 
         // getting the shortest path

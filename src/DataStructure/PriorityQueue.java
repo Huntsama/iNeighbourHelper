@@ -1,25 +1,28 @@
 package DataStructure;
 
 /**
- * PriorityQueue
+ * priority queue
  */
-
 public class PriorityQueue {
 	// nested class representing an element with its priority
 	private class PriorityPair implements Comparable {
 		private Object element; // the element in the queue
 		private Object priority; // priority of the element
 
-		// initializing a priority pair with element and priority
+		// initializing a priority pair
 		public PriorityPair(Object element, Object priority) {
 			this.element = element;
 			this.priority = priority;
 		}
 
-		// comparing this pair with another based on priority
+		// comparing based on priority
 		public int compareTo(Object o) {
 			PriorityPair p2 = (PriorityPair) o;
 			return ((Comparable) priority).compareTo(p2.priority);
+		}
+
+		public String toString() {
+			return element + "(" + priority + ")";
 		}
 	}
 
@@ -30,8 +33,7 @@ public class PriorityQueue {
 		data = new LinkedList();
 	}
 
-
-	// removing and returning the highest priority element from the queue
+	// removing and returning the highest priority element
 	public Object pop() {
 		if (!data.isEmpty()) {
 			PriorityPair x = (PriorityPair) data.getFirst();
@@ -41,7 +43,7 @@ public class PriorityQueue {
 		return null;
 	}
 
-	// getting the highest priority element without removing it
+	// getting the highest priority element without removing
 	public Object top() {
 		if (!data.isEmpty()) {
 			PriorityPair x = (PriorityPair) data.getFirst();
@@ -50,9 +52,9 @@ public class PriorityQueue {
 		return null;
 	}
 
-	// converting the priority queue to a string representation
+	// converting to string
 	@Override
 	public String toString() {
-		return "data=" + data + '}';
+		return "PriorityQueue [ " + data + " ]";
 	}
 }

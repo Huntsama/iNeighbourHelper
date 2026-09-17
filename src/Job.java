@@ -1,18 +1,23 @@
 public class Job {
 
     /**
-     * The Job class is an entity class and it stores id,name,email and the street
+     * the job class is an entity class and it stores id, title, description and category
      */
 
-    // removing the static  counter for the unique id
+    // job details
     private int id;
     private String title;
     private String description;
     private String category;
     private boolean isPaid;
     private float price;
-    private int userID;
 
+    // reference to the user who owns this job
+    private User jobOwner;
+
+    /**
+     * constructor to initialize job details
+     */
     public Job(int id, String title, String description, String category, boolean isPaid, float price) {
         this.id = id;
         this.title = title;
@@ -22,33 +27,35 @@ public class Job {
         this.price = price;
     }
 
+    // getting the job id
     public int getId() {
         return id;
     }
 
-    // adding this method the get category to use it in the method find by category
+    // getting the category to use it in filtering
     public String getCategory() {
         return category;
     }
 
-    // adding this method to get the isPaid value that will be used in method  find avaible jobs
+    // getting the ispaid value to check if job is paid or unpaid
     public boolean getIsPaid() {
         return isPaid;
     }
 
-    // Getter for userID
-    public int getUserID() {
-        return userID;
+    // getting the owner of the job
+    public User getJobOwner() {
+        return jobOwner;
     }
 
-    // Setter for userID
-    public void setUserID(int userID) {
-        this.userID = userID;
+    // setting the owner of the job
+    public void setJobOwner(User jobOwner) {
+        this.jobOwner = jobOwner;
     }
 
+    // converting job details to a string representation
     @Override
     public String toString() {
-        // if ispaid is true it prints out with the price and if not it print without the price
+        // if ispaid is true it prints out with the price, otherwise without price
         if (isPaid) {
             return id + ", " + title + ", " + description + ", " + category + ", " + price;
         }

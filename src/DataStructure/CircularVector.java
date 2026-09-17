@@ -5,7 +5,6 @@ package DataStructure;
  */
 
 public class CircularVector {
-    // array for storing elements in circular vector
     private Object data[];
     // index pointing to the first element
     private int first;
